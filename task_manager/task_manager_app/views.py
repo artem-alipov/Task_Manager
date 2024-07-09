@@ -12,8 +12,6 @@ from django.urls import reverse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.admin.views.decorators import staff_member_required
-
 from django.contrib.auth.decorators import login_required
 
 
@@ -24,7 +22,7 @@ def is_admin(user):
 admin_required = user_passes_test(lambda user: user.is_superuser)
 
 
-def user_login(request):
+def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request, request.POST)
         if form.is_valid():
@@ -36,13 +34,13 @@ def user_login(request):
                 return redirect('user_tasks_list')
     else:
         form = LoginForm()
-    return render(request, 'task_manager_app/login.html', {'form': form})
+    return render(request, 'login.html', {'form': form})
 
 
 @login_required
 def user_tasks_list(request):
     tasks = request.user.tasks.all()
-    return render(request, 'task_manager_app/user_tasks_list.html', {'tasks': tasks})
+    return render(request, 'user_tasks_list.html', {'tasks': tasks})
 
 
 class RegistrationForm(UserCreationForm):
@@ -66,7 +64,7 @@ def register(request):
             return redirect('login')
     else:
         form = RegistrationForm()
-    return render(request, 'task_manager_app/register.html', {'form': form})
+    return render(request, 'register.html', {'form': form})
 
 
 def LogoutPage(request):
@@ -115,7 +113,7 @@ def create_task(request):
     else:
         categories = Category.objects.all()
         users = User.objects.all()
-        return render(request, 'task_manager_app/create_task.html', {'categories': categories, 'users': users})
+        return render(request, 'create_task.html', {'categories': categories, 'users': users})
 
 
 @login_required
@@ -136,14 +134,14 @@ def update_task(request, task_id):
         return redirect('category_list')
     else:
         # Render update task page with task data
-        return render(request, 'task_manager_app/update_task.html', {'task': task})
+        return render(request, 'update_task.html', {'task': task})
 
 
 @login_required
 @admin_required
 def category_list(request):
     categories = Category.objects.all()
-    return render(request, 'task_manager_app/category_list.html', {'categories': categories})
+    return render(request, 'category_list.html', {'categories': categories})
 
 
 @login_required
@@ -153,7 +151,7 @@ def create_category(request):
         name = request.POST.get('name')
         Category.objects.create(name=name)
         return redirect('category_list')
-    return render(request, 'task_manager_app/create_category.html')
+    return render(request, 'create_category.html')
 
 
 @login_required
@@ -174,7 +172,7 @@ def delete_category(request, category_id):
 def category_tasks(request, category_id):
     category = get_object_or_404(Category, pk=category_id)
     tasks = category.task_set.all()
-    return render(request, 'task_manager_app/category_tasks.html', {'category': category, 'tasks': tasks})
+    return render(request, 'category_tasks.html', {'category': category, 'tasks': tasks})
 
 
 @login_required
@@ -187,4 +185,4 @@ def task_chart(request):
             category=category,
             start_date__gt=timezone.now()
         ).count()
-    return render(request, 'task_manager_app/task_chart.html', {'pending_counts': pending_counts})
+    return render(request, 'task_chart.html', {'pending_counts': pending_counts})

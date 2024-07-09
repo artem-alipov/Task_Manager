@@ -3,14 +3,13 @@ from django.urls import path
 from task_manager_app import views
 from django.contrib import admin
 from django.urls import path, include
-from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', views.user_tasks_list, name='user_tasks_list'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('register/', views.register, name='register'),
-    path('login/', views.user_login, name='login'),
+    path('login/', views.login_view, name='login'),
     path("logout/", views.LogoutPage, name="logout"),
     path('', views.category_list, name='category_list'),
     path('categories/create/', views.create_category, name='create_category'),
